@@ -42,6 +42,9 @@ Vue.prototype.$API=API;
 //三级联动组件
 import CategorySelect from './components/CategorySelect';
 Vue.component(CategorySelect.name,CategorySelect);
+//带有提示的按钮
+import HintButton from '@/components/HintButton'
+Vue.component(HintButton.name,HintButton);
 new Vue({
   el: '#app',
   router,

@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card style="margin: 20px 0px">
-      <CategorySelect @getCategoryId="getCategoryId"></CategorySelect>
+      <CategorySelect @getCategoryId="getCategoryId" :show="!isShowTable"></CategorySelect>
     </el-card>
     <el-card>
       <div v-show="isShowTable">
@@ -67,7 +67,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <el-button type="primary">保存</el-button>
+        <el-button type="primary" @click="saveAttr" :disabled="attrInfo.attrValueList.length<1">保存</el-button>
         <el-button @click="isShowTable = true">取消</el-button>
       </div>
     </el-card>
@@ -199,6 +199,29 @@ export default {
     deleteAttrValue(index){
       //这里不需要发请求，由于表格长度和attrInfo绑定，这是element-ui表格的用法，数组少了一个页面就重新渲染了
       this.attrInfo.attrValueList.splice(index,1);
+    },
+    //保存属性并上传给服务器
+    async saveAttr(){
+      // 属性值不能为空，服务器不想要flag这个字段
+      //filter方法会改变原数组
+      this.attrInfo.attrValueList=this.attrInfo.attrValueList.filter(item=>{
+        if(item.valueName!==''){
+          delete item.flag;
+          return true;
+        }
+      })
+      try{
+        await this.$API.attr.reqAddOrUpdateAttr(this.attrInfo);
+        //显示属性列表而不继续是添加这个界面
+        this.isShowTable=true;
+        this.$message({
+          type:'success',
+          message:'保存成功'
+        });
+        this.getAttrList();
+      }catch{
+        this.$message('保存失败');
+      }
     }
   }
 };

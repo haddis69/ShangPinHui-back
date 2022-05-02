@@ -7,7 +7,7 @@
       <!-- 这里将有3部分进行切换 -->
       <!-- 展示spu列表 -->
       <div v-show="scene==0">
-        <el-button type="primary" icon="el-icon-plus">添加spu</el-button>
+        <el-button type="primary" icon="el-icon-plus" :disabled="!category3Id" @click="addSpu">添加spu</el-button>
         <el-table style="width: 100%" border :data="records">
           <el-table-column type="index" label="序号" width="80" align="center"></el-table-column>
           <el-table-column prop="spuName" label="spu名称" width="width"></el-table-column>
@@ -16,7 +16,7 @@
             <template slot-scope="{row,$index}">
               <!-- 自定义封装组件，虽然封装的名字是HintButton，但是这里可以写hint-button -->
               <hint-button type="success" icon="el-icon-plus" size="mini" title="添加sku"></hint-button>
-              <hint-button type="warning" icon="el-icon-edit" size="mini" title="修改spu"></hint-button>
+              <hint-button type="warning" icon="el-icon-edit" size="mini" title="修改spu" @click.native="updateSpu(row)"></hint-button>
               <hint-button type="info" icon="el-icon-info" size="mini" title="查看当前所有spu类所有sku列表"></hint-button>
               <hint-button type="danger" icon="el-icon-delete" size="mini" title="删除spu"></hint-button>
             </template>
@@ -33,7 +33,7 @@
           :total="total">
         </el-pagination>
       </div>
-      <SpuForm v-show="scene==1"></SpuForm>
+      <SpuForm v-show="scene==1" @changeScene="changeScene" ref="spu"></SpuForm>
       <SkuForm v-show="scene==2"></SkuForm>
     </el-card>
   </div>
@@ -103,6 +103,22 @@ export default {
     handleSizeChange(limit){
       this.limit=limit;
       this.getSpuList();
+    },
+    //添加spu按钮的回调
+    addSpu(){
+      this.scene=1;
+    },
+    //修改spu的回调
+    updateSpu(row){
+      this.scene=1;
+    //spuform需要每次出现在页面的时候都发请求，但是不能在它的mounted里，因为我们用的是v-show
+    //v-show控制的是显示与隐藏，它的组件的mounted只会触发一次，不能多次发请求
+    //所以这里我们采用父组件操作子组件自定义事件的方法
+      this.$refs.spu.initSpuData(row);
+    },
+    //自定义事件的回调,spuform传入参数0，切换场景
+    changeScene(scene){
+      this.scene=scene;
     }
   }
 };

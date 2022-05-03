@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>Sku</h1>
+    sku
   </div>
 </template>
 <script>

@@ -15,7 +15,7 @@
           <el-table-column prop="prop" label="操作" width="width">
             <template slot-scope="{ row, $index }">
               <!-- 自定义封装组件，虽然封装的名字是HintButton，但是这里可以写hint-button -->
-              <hint-button type="success" icon="el-icon-plus" size="mini" title="添加sku"></hint-button>
+              <hint-button type="success" icon="el-icon-plus" size="mini" title="添加sku" @click.native="addSku(row)"></hint-button>
               <hint-button
                 type="warning"
                 icon="el-icon-edit"
@@ -48,7 +48,7 @@
         ></el-pagination>
       </div>
       <SpuForm v-show="scene == 1" @changeScene="changeScene" ref="spu"></SpuForm>
-      <SkuForm v-show="scene == 2"></SkuForm>
+      <SkuForm v-show="scene == 2" ref="sku"></SkuForm>
     </el-card>
   </div>
 </template>
@@ -142,6 +142,12 @@ export default {
         this.$message({ type: "success", message: "删除成功" });
         this.getSpuList();
       }
+    },
+    //添加sku
+    addSku(row){
+      this.scene=2;
+      //点击的spu身上有spuId和category3Id,都在row里
+      this.$refs.sku.getData(this.category1Id,this.category2Id,row);
     }
   }
 };

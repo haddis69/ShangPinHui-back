@@ -53,13 +53,13 @@
           <el-table-column type="index" align="center" label="序号" width="80"></el-table-column>
           <el-table-column prop="saleAttrName" label="属性名" width="width"></el-table-column>
           <el-table-column prop="prop" label="属性值名称列表" width="width">
-            <!-- @close="handleClose(tag)" -->
             <template slot-scope="{ row, $index }">
               <el-tag
                 :key="tag.id"
-                v-for="tag in row.spuSaleAttrValueList"
+                v-for="(tag,index) in row.spuSaleAttrValueList"
                 closable
                 :disable-transitions="false"
+                @close="row.spuSaleAttrValueList.splice(index,1)"
               >{{ tag.saleAttrValueName }}</el-tag>
               <!-- @keyup.enter.native="handleInputConfirm"
               @blur="handleInputConfirm"-->
@@ -77,7 +77,7 @@
           </el-table-column>
           <el-table-column prop="prop" label="操作" width="width">
             <template slot-scope="{row,$index}">
-              <el-button type="danger" icon="el-icon-delete" size="mini"></el-button>
+              <el-button type="danger" icon="el-icon-delete" size="mini" @click="spu.spuSaleAttrList.splice($index,1)"></el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -243,7 +243,7 @@ export default {
       row.spuSaleAttrValueList.push(newAttrValue);
       //已经是响应式数据了，上面设置过了
       row.inputVisible=false;
-    }
+    },
   },
   computed: {
     //还未选择的销售属性

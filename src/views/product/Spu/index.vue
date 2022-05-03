@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card style="margin: 20px 0">
-      <CategorySelect @getCategoryId="getCategoryId" :show="!show"></CategorySelect>
+      <CategorySelect @getCategoryId="getCategoryId" :show="scene!=0"></CategorySelect>
     </el-card>
     <el-card>
       <!-- 这里将有3部分进行切换 -->
@@ -48,7 +48,6 @@ export default {
       category1Id: "",
       category2Id: "",
       category3Id: "",
-      show: true,
       // 分页器默认页码
       page:1,
       //每页数据条数

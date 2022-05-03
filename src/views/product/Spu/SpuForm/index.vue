@@ -83,8 +83,8 @@
         </el-table>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary">保存</el-button>
-        <el-button @click="$emit('changeScene', 0)">取消</el-button>
+        <el-button type="primary" @click="addOrUpdateSpu">保存</el-button>
+        <el-button @click="cancel">取消</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -244,6 +244,51 @@ export default {
       //已经是响应式数据了，上面设置过了
       row.inputVisible=false;
     },
+    //保存按钮回调，可能是添加或者修改
+    async addOrUpdateSpu(){
+      //整理参数
+      //整理照片墙的数据，图片需要携带imgName和imgUrl字段给服务器，但是添加的图片是没有这两个字段的
+      this.spu.spuImageList = this.spuImageList.map(item=>{
+        return {
+          imgName:item.name,
+          imgUrl:item.response?item.response.data:item.url
+        }
+      })
+      let result = await this.$API.spu.reqAddOrUpdateSpu(this.spu);
+      if(result.code===200){
+        this.$message({
+          type:'success',
+          message:'保存成功'
+        })
+        this.$emit('changeScene',0);
+      }
+      //清空数据，避免再进来的时候回显
+      Object.assign(this._data,this.$options.data());
+    },
+    //添加SPU
+    async addSpuData(category3Id){
+      // category3Id在修改的时候是服务器返回给我们的，但是添加的时候应该收集一下
+      this.spu.category3Id=category3Id;
+      //获取品牌信息
+      let tradeMarkResult = await this.$API.spu.reqTradeMarkList();
+      if (tradeMarkResult.code === 200) {
+        this.tradeMarkList = tradeMarkResult.data;
+      }
+      //获取平台全部销售属性
+      let saleResult = await this.$API.spu.reqBaseSaleAttrList();
+      if (saleResult.code === 200) {
+        this.saleAttrList = saleResult.data;
+      }
+    },
+    //取消按钮
+    cancel(){
+      this.$emit('changeScene', 0);
+      //清空数据，避免再进来的时候回显
+      //this._data是当前的响应式数据，this.$options是当前的配置对象，自然有data属性
+      //而上方配置对象里的data都是初始值(空值)，后者覆盖前者
+      //这种方法比把想清空的数据挨个清空方便得多
+      Object.assign(this._data,this.$options.data());
+    }
   },
   computed: {
     //还未选择的销售属性

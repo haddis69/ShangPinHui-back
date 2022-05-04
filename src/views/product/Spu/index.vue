@@ -62,8 +62,8 @@
       <SpuForm v-show="scene == 1" @changeScene="changeScene" ref="spu"></SpuForm>
       <SkuForm v-show="scene == 2" ref="sku" @changeScene="changeScene"></SkuForm>
     </el-card>
-    <el-dialog :title="`${spu.spuName}的sku列表`" :visible.sync="dialogTableVisible">
-      <el-table :data="skuList" style="width: 100%" border>
+    <el-dialog :title="`${spu.spuName}的sku列表`" :visible.sync="dialogTableVisible" :before-close="close">
+      <el-table :data="skuList" style="width: 100%" border v-loading="loading">
         <el-table-column prop="skuName" label="名称" width="width"></el-table-column>
         <el-table-column prop="price" label="价格" width="width"></el-table-column>
         <el-table-column prop="weight" label="重量" width="width"></el-table-column>
@@ -102,7 +102,9 @@ export default {
       //声明一个spu对象,点击查看sku按钮的时候，对话框里的很多属性都用到了这个值
       spu: {},
       //存储sku的数据
-      skuList: []
+      skuList: [],
+      //加载指令所绑定的字段
+      loading:true
     };
   },
   components: {
@@ -189,7 +191,20 @@ export default {
       let result = await this.$API.spu.reqSkuList(spu.id);
       if (result.code === 200) {
         this.skuList = result.data;
+        //去除loading效果
+        this.loading=false;
       }
+    },
+    //关闭对话框的回调
+    close(done){
+      //loading的两个小细节
+      //1.loading只能使用一次
+      //2.查看其它的sku会有回显
+      //所以要在这里设置关闭对话框的优化
+      this.loading=true;
+      this.skuList=[];
+      //注入的参数，关闭对话框
+      done();
     }
   }
 };

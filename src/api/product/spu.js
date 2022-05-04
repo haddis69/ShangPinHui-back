@@ -35,3 +35,11 @@ export const reqAddOrUpdateSpu = (spuInfo) => {
 //删除SPU
 ///admin/product/deleteSpu/{spuId}
 export const reqDeleteSpu = (spuId)=>request({url:`/admin/product/deleteSpu/${spuId}`,method:'delete'});
+
+//添加SKU
+///admin/product/saveSkuInfo  post
+export const reqAddSku = (skuInfo)=>request({url:'/admin/product/saveSkuInfo',method:'post',data:skuInfo});
+
+//获取SKU列表数据的接口
+//GET /admin/product/findBySpuId/{spuId}  
+export const reqSkuList = (spuId)=>request({url:`/admin/product/findBySpuId/${spuId}`,method:'get'});

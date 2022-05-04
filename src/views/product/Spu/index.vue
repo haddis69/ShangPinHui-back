@@ -13,9 +13,15 @@
           <el-table-column prop="spuName" label="spu名称" width="width"></el-table-column>
           <el-table-column prop="description" label="spu描述" width="width"></el-table-column>
           <el-table-column prop="prop" label="操作" width="width">
-            <template slot-scope="{ row, $index }">
+            <template slot-scope="{ row }">
               <!-- 自定义封装组件，虽然封装的名字是HintButton，但是这里可以写hint-button -->
-              <hint-button type="success" icon="el-icon-plus" size="mini" title="添加sku" @click.native="addSku(row)"></hint-button>
+              <hint-button
+                type="success"
+                icon="el-icon-plus"
+                size="mini"
+                title="添加sku"
+                @click.native="addSku(row)"
+              ></hint-button>
               <hint-button
                 type="warning"
                 icon="el-icon-edit"
@@ -23,7 +29,13 @@
                 title="修改spu"
                 @click.native="updateSpu(row)"
               ></hint-button>
-              <hint-button type="info" icon="el-icon-info" size="mini" title="查看当前所有spu类所有sku列表"></hint-button>
+              <hint-button
+                type="info"
+                icon="el-icon-info"
+                size="mini"
+                title="查看当前所有spu类所有sku列表"
+                @click.native="handlerCheckSku(row)"
+              ></hint-button>
               <el-popconfirm title="这是一段内容确定删除吗？" @onConfirm="deleteSpu(row)">
                 <hint-button
                   type="danger"
@@ -48,8 +60,20 @@
         ></el-pagination>
       </div>
       <SpuForm v-show="scene == 1" @changeScene="changeScene" ref="spu"></SpuForm>
-      <SkuForm v-show="scene == 2" ref="sku"></SkuForm>
+      <SkuForm v-show="scene == 2" ref="sku" @changeScene="changeScene"></SkuForm>
     </el-card>
+    <el-dialog :title="`${spu.spuName}的sku列表`" :visible.sync="dialogTableVisible">
+      <el-table :data="skuList" style="width: 100%" border>
+        <el-table-column prop="skuName" label="名称" width="width"></el-table-column>
+        <el-table-column prop="price" label="价格" width="width"></el-table-column>
+        <el-table-column prop="weight" label="重量" width="width"></el-table-column>
+        <el-table-column label="默认图片" width="width">
+          <template slot-scope="{row}">
+            <img :src="row.skuDefaultImg" style="width:100px;height:100px;"/>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -72,7 +96,13 @@ export default {
       total: 0,
       //场景,上面可以有三种状态的切换，这个值控制该展示哪个场景
       //0就是展示spu列表，1代表添加与修改spu，2代表添加sku
-      scene: 0
+      scene: 0,
+      //对话框默认隐藏
+      dialogTableVisible: false,
+      //声明一个spu对象,点击查看sku按钮的时候，对话框里的很多属性都用到了这个值
+      spu: {},
+      //存储sku的数据
+      skuList: []
     };
   },
   components: {
@@ -138,16 +168,28 @@ export default {
     //删除Spu
     async deleteSpu(row) {
       let result = await this.$API.spu.reqDeleteSpu(row.id);
-       if (result.code == 200) {
+      if (result.code == 200) {
         this.$message({ type: "success", message: "删除成功" });
         this.getSpuList();
       }
     },
     //添加sku
-    addSku(row){
-      this.scene=2;
+    addSku(row) {
+      this.scene = 2;
       //点击的spu身上有spuId和category3Id,都在row里
-      this.$refs.sku.getData(this.category1Id,this.category2Id,row);
+      this.$refs.sku.getData(this.category1Id, this.category2Id, row);
+    },
+    //查看sku按钮的回调
+    async handlerCheckSku(spu) {
+      //保存点击的spu信息
+      this.spu = spu;
+      //控制对话框是否可见
+      this.dialogTableVisible = true;
+      //获取sku的列表进行展示
+      let result = await this.$API.spu.reqSkuList(spu.id);
+      if (result.code === 200) {
+        this.skuList = result.data;
+      }
     }
   }
 };

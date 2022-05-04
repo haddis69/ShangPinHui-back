@@ -54,6 +54,10 @@ export const constantRoutes = [
       meta: { title: '首页', icon: 'dashboard' }
     }]
   },
+  //整个屏幕是一个最大的组件，左侧的导航栏无论怎么切换都在Layout组件内
+  //在Layout的/product路由里每写一个二级路由并保存，导航栏立即会自动生成一个二级路由的结构，样式也已经准备好
+  //所以我们只需要在这里配置二级路由就可以了，这是我们所使用的后台框架帮我们准备好的便捷功能
+  //二级路由的按钮结构不用我们去写
   {
     path: '/product',
     component: Layout,

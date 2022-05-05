@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    .box {
+      width: 100%;
+      height: 400px;
+    }
+  </style>
+  <body>
+    <div class="box"></div>
+  </body>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.1.2/echarts.js"></script>
+  <script>
+    // 基于准备好的dom，初始化echarts实例
+    let dom = document.querySelector(".box");
+    //创建实例
+    let myCharts = echarts.init(dom);
+    myCharts.setOption({
+      title: {
+        text: "双坐标",
+      },
+      xAxis: {
+        data: ["游戏", "电影", "直播", "娱乐"],
+      },
+      //多个y轴，用数组表示，双y轴的话左边是索引为0的y轴，右边是索引为1的y轴
+      yAxis: [
+        {
+          //y轴的线
+          axisLine: {
+            show: true,
+          },
+          //y轴刻度
+          axisTick: {
+            show: true,
+          },
+        },
+        {
+          //y轴的线
+          axisLine: {
+            show: true,
+          },
+          //y轴刻度
+          axisTick: {
+            show: true,
+          },
+        },
+      ],
+      //yAxisIndex表示用哪个y轴，按数组索引查找y轴
+      series: [
+        {
+          yAxisIndex: 0,
+          type: "bar",
+          data: [10, 20, 30, 40],
+        },
+        {
+          yAxisIndex: 1,
+          type: "line",
+          data: [6, 10, 90, 20],
+        },
+      ],
+    });
+  </script>
+</html>

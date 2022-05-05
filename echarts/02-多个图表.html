@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+    }
+    div {
+      width: 800px;
+      height: 400px;
+    }
+  </style>
+  <body>
+    <div id="box1"></div>
+    <div id="box2"></div>
+  </body>
+  <script src="https://cdn.bootcdn.net/ajax/libs/echarts/5.1.2/echarts.js"></script>
+  <script>
+    // 基于准备好的dom，初始化echarts实例
+    let dom1 = document.querySelector("#box1");
+    let dom2 = document.querySelector("#box2");
+    //创建实例
+    let myCharts1 = echarts.init(dom1);
+    let myCharts2 = echarts.init(dom2);
+    // 使用刚指定的配置项和数据显示图表
+    myCharts1.setOption({
+      title: {
+        text: "数据可视化",
+        subtext: "echarts基本使用",
+        //主标题颜色
+        textStyle:{
+            color:'cyan'
+        },
+        //标题位置
+        left:'center'
+      },
+      xAxis: {
+        data: ["衣服", "直播", "游戏", "电影"],
+      },
+      yAxis: {
+        //y轴的线
+        axisLine:{
+          show:true
+        },
+        //y轴刻度
+        axisTick:{
+          show:true
+        }
+      },
+      //想要设置什么类型的图表
+      series: [
+        {
+          type: "bar",
+          data: [10, 20, 30, 40],
+          color:'red'
+        }
+      ],
+    });
+    myCharts2.setOption({
+        title:{
+            text:'折线图',
+            left:'center',
+            textStyle:{
+                color:'red'
+            },
+            subtext: "echarts基本使用2",
+            subtextStyle:{
+                color:'purple'
+            }
+        },
+        xAxis:{
+            data:['星期一','星期二','星期三','星期四','星期五','星期六','星期日']
+        },
+        yAxis:{},
+        series: [
+            {
+            type: "line",
+            data: [10, 20, 15, 44,15,60,88],
+            color:'orange'
+            }
+        ],
+    })
+  </script>
+</html>

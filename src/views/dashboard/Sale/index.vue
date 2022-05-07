@@ -30,41 +30,41 @@
           <div class="charts" ref="charts"></div>
         </el-col>
         <el-col :span="6">
-          <h3>门店{{title}}排名</h3>
+          <h3>门店{{ title }}排名</h3>
           <ul>
             <li>
               <span class="rindex">1</span>
-              <span style="margin:0 10px;">肯德基</span>
+              <span style="margin: 0 10px">肯德基</span>
               <span class="rvalue">123456</span>
             </li>
             <li>
               <span class="rindex">2</span>
-              <span style="margin:0 10px;">肯德基</span>
+              <span style="margin: 0 10px">麦当劳</span>
               <span class="rvalue">123456</span>
             </li>
             <li>
               <span class="rindex">3</span>
-              <span style="margin:0 10px;">肯德基</span>
+              <span style="margin: 0 10px">必胜客</span>
               <span class="rvalue">123456</span>
             </li>
             <li>
               <span>4</span>
-              <span style="margin:0 10px;">肯德基</span>
+              <span style="margin: 0 10px">海底捞</span>
               <span class="rvalue">123456</span>
             </li>
             <li>
               <span>5</span>
-              <span style="margin:0 10px;">肯德基</span>
+              <span style="margin: 0 10px">西贝莜面村</span>
               <span class="rvalue">123456</span>
             </li>
             <li>
               <span>6</span>
-              <span style="margin:0 10px;">肯德基</span>
+              <span style="margin: 0 10px">汉堡王</span>
               <span class="rvalue">123456</span>
             </li>
-             <li>
+            <li>
               <span>7</span>
-              <span style="margin:0 10px;">肯德基</span>
+              <span style="margin: 0 10px">真功夫</span>
               <span class="rvalue">123456</span>
             </li>
           </ul>
@@ -75,21 +75,22 @@
 </template>
 <script>
 import * as echarts from "echarts";
-import dayjs from 'dayjs'
+import dayjs from "dayjs";
+import { mapState } from "vuex";
 export default {
   name: "Sale",
   data() {
     return {
       activeName: "sale",
-      myCharts:null,
-      date:[]
+      myCharts: null,
+      date: []
     };
   },
   mounted() {
     this.myCharts = echarts.init(this.$refs.charts);
     this.myCharts.setOption({
       title: {
-        text: this.title+'趋势'
+        text: this.title + "趋势"
       },
       tooltip: {
         trigger: "axis",
@@ -106,20 +107,7 @@ export default {
       xAxis: [
         {
           type: "category",
-          data: [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May",
-            "Jun",
-            "Jul",
-            "Aug",
-            "Sep",
-            "Oct",
-            "Nov",
-            "Dec"
-          ],
+          data: [],
           axisTick: {
             alignWithLabel: true
           }
@@ -135,48 +123,123 @@ export default {
           name: "Direct",
           type: "bar",
           barWidth: "60%",
-          data: [10, 52, 200, 334, 390, 330, 220, 110, 98, 167, 123, 44]
+          data: []
         }
       ]
     });
   },
   computed: {
-      title(){
-          return this.activeName=='sale'?'销售额':'访问量'
-      }
+    title() {
+      return this.activeName == "sale" ? "销售额" : "访问量";
+    },
+    ...mapState({
+      listState: state => state.home.list
+    })
   },
-  watch:{
-      //mounted只会执行一次，所以要监视
-      title(){
-        this.myCharts.setOption({
-            title:{
-                text:this.title+'趋势'
+  watch: {
+    //mounted只会执行一次，所以要监视
+    title() {
+      this.myCharts.setOption({
+        title: {
+          text: this.title + "趋势"
+        },
+        xAxis: {
+          data:
+            this.title == "销售额"
+              ? this.listState.orderFullYearAxis
+              : this.listState.userFullYearAxis
+        },
+        series: [
+          {
+            name: "Direct",
+            type: "bar",
+            barWidth: "60%",
+            data:
+              this.title == "销售额"
+                ? this.listState.orderFullYear
+                : this.listState.userFullYear
+          }
+        ]
+      });
+    },
+    //这里获取数据需要发请求，所以不能写在mounted里
+    //页面在父组件index.vue发请求之后，listState拿到数据，watch监听这种变化并设置表格数据
+    listState() {
+      this.myCharts.setOption({
+        title: {
+          text: this.title + "趋势"
+        },
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            type: "shadow"
+          }
+        },
+        grid: {
+          left: "3%",
+          right: "4%",
+          bottom: "3%",
+          containLabel: true
+        },
+        xAxis: [
+          {
+            type: "category",
+            data: this.listState.orderFullYearAxis,
+            axisTick: {
+              alignWithLabel: true
             }
-        })
-      }
+          }
+        ],
+        yAxis: [
+          {
+            type: "value"
+          }
+        ],
+        series: [
+          {
+            name: "Direct",
+            type: "bar",
+            barWidth: "60%",
+            data: this.listState.orderFullYear
+          }
+        ]
+      });
+    }
   },
-  methods:{
-      //date是双向绑定的数据
-      setDay(){
-        const day = dayjs().format('YYYY-MM-DD');
-        this.date=[day,day]
-      },
-      setWeek(){
-          //dayjs的固定写法
-          const start = dayjs().day(1).format('YYYY-MM-DD');
-          const end = dayjs().day(7).format('YYYY-MM-DD');
-          this.date=[start,end];
-      },
-      setMonth(){
-          const start = dayjs().startOf('month').format('YYYY-MM-DD');
-          const end = dayjs().endOf('month').format('YYYY-MM-DD');
-          this.date=[start,end];
-      },
-      setYear(){
-          const start = dayjs().startOf('year').format('YYYY-MM-DD');
-          const end = dayjs().endOf('year').format('YYYY-MM-DD');
-          this.date=[start,end];
-      }
+  methods: {
+    //date是双向绑定的数据
+    setDay() {
+      const day = dayjs().format("YYYY-MM-DD");
+      this.date = [day, day];
+    },
+    setWeek() {
+      //dayjs的固定写法
+      const start = dayjs()
+        .day(1)
+        .format("YYYY-MM-DD");
+      const end = dayjs()
+        .day(7)
+        .format("YYYY-MM-DD");
+      this.date = [start, end];
+    },
+    setMonth() {
+      const start = dayjs()
+        .startOf("month")
+        .format("YYYY-MM-DD");
+      const end = dayjs()
+        .endOf("month")
+        .format("YYYY-MM-DD");
+      this.date = [start, end];
+    },
+    setYear() {
+      const start = dayjs()
+        .startOf("year")
+        .format("YYYY-MM-DD");
+      const end = dayjs()
+        .endOf("year")
+        .format("YYYY-MM-DD");
+      this.date = [start, end];
+    }
   }
 };
 </script>

@@ -43,6 +43,28 @@ export const constantRoutes = [
     hidden: true,
   },
   {
+    path: "/",
+    component: Layout,
+    redirect: "/dashboard",
+    children: [
+      {
+        path: "dashboard",
+        name: "Dashboard",
+        component: () => import("@/views/dashboard/index"),
+        meta: { title: "首页", icon: "dashboard" },
+      },
+    ],
+  },
+  //整个屏幕是一个最大的组件，左侧的导航栏无论怎么切换都在Layout组件内
+  //在Layout的/product路由里每写一个二级路由并保存，导航栏立即会自动生成一个二级路由的结构，样式也已经准备好
+  //所以我们只需要在这里配置二级路由就可以了，这是我们所使用的后台框架帮我们准备好的便捷功能
+  //二级路由的按钮结构不用我们去写
+  // 404 page must be placed at the end !!!
+];
+//异步理由:不同的用户（角色），需要过滤筛选出的路由，称之为异步路由
+//有的用户可以看见测试管理、有的看不见
+export const asyncRoutes = [
+  {
     name: "Acl",
     path: "/acl",
     component: Layout,
@@ -89,23 +111,6 @@ export const constantRoutes = [
     ],
   },
   {
-    path: "/",
-    component: Layout,
-    redirect: "/dashboard",
-    children: [
-      {
-        path: "dashboard",
-        name: "Dashboard",
-        component: () => import("@/views/dashboard/index"),
-        meta: { title: "首页", icon: "dashboard" },
-      },
-    ],
-  },
-  //整个屏幕是一个最大的组件，左侧的导航栏无论怎么切换都在Layout组件内
-  //在Layout的/product路由里每写一个二级路由并保存，导航栏立即会自动生成一个二级路由的结构，样式也已经准备好
-  //所以我们只需要在这里配置二级路由就可以了，这是我们所使用的后台框架帮我们准备好的便捷功能
-  //二级路由的按钮结构不用我们去写
-  {
     path: "/product",
     component: Layout,
     name: "Product",
@@ -136,10 +141,10 @@ export const constantRoutes = [
         meta: { title: "Sku管理" },
       },
     ],
-  },
-  // 404 page must be placed at the end !!!
-  { path: "*", redirect: "/404", hidden: true },
+  }
 ];
+//任意路由：当路径出现错误的时候重定向404
+export const anyRoutes = { path: "*", redirect: "/404", hidden: true };
 
 const createRouter = () =>
   new Router({
